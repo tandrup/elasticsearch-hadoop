@@ -21,6 +21,7 @@ package org.elasticsearch.hadoop.serialization.bulk;
 import org.elasticsearch.hadoop.EsHadoopIllegalArgumentException;
 import org.elasticsearch.hadoop.cfg.ConfigurationOptions;
 import org.elasticsearch.hadoop.cfg.Settings;
+import org.elasticsearch.hadoop.util.ObjectUtils;
 
 /**
  * Handles the instantiation of bulk commands.
@@ -30,9 +31,13 @@ public abstract class BulkCommands {
     public static BulkCommand create(Settings settings, MetadataExtractor metaExtractor) {
 
         String operation = settings.getOperation();
-        BulkFactory factory = null;
+        BulkFactory factory;
 
-        if (ConfigurationOptions.ES_OPERATION_CREATE.equals(operation)) {
+        String bulkFactoryClass = settings.getProperty(ConfigurationOptions.ES_BULK_FACTORY_CLASS);
+        if (bulkFactoryClass != null){
+            factory = ObjectUtils.instantiate(bulkFactoryClass, settings);
+        }
+        else if (ConfigurationOptions.ES_OPERATION_CREATE.equals(operation)) {
             factory = new CreateBulkFactory(settings, metaExtractor);
         }
         else if (ConfigurationOptions.ES_OPERATION_INDEX.equals(operation)) {

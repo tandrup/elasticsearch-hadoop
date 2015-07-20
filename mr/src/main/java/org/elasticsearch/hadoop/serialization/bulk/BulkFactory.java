@@ -19,7 +19,7 @@
 package org.elasticsearch.hadoop.serialization.bulk;
 
 
-interface BulkFactory {
+public interface BulkFactory {
 
     BulkCommand createBulk();
 }
